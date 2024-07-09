@@ -83,6 +83,19 @@ app.use((req, res) => {
     res.json({ error: "Resource Not Found" });
 });
 
+// Error-handling middleware.
+// Any call to next() that includes an
+// Error() will skip regular middleware and
+// only be processed by error-handling middleware.
+// This changes our error handling throughout the application,
+// but allows us to change the processing of ALL errors
+// at once in a single location, which is important for
+// scalability and maintainability.
+app.use((err, req, res, next) => {
+    res.status(err.status || 500);
+    res.json({ error: err.message });
+});
+
 
 app.listen(port, () => {
     console.log(`Server listening on port: ${port}.`);
