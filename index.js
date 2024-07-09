@@ -36,6 +36,34 @@ app.use((req, res, next) => {
 });
 
 
+// Valid API Keys.
+apiKeys = ["perscholas", "ps-example", "hJAsknw-L198sAJD-l3kasx"];
+
+// New middleware to check for API keys!
+// Note that if the key is not verified,
+// we do not call next(); this is the end.
+// This is why we attached the /api/ prefix
+// to our routing at the beginning!
+app.use("/api", function (req, res, next) {
+    var key = req.query["api-key"];
+
+    // Check for the absence of a key.
+    if (!key) {
+        res.status(400);
+        return res.json({ error: "API Key Required" });
+    }
+
+    // Check for key validity.
+    if (apiKeys.indexOf(key) === -1) {
+        res.status(401);
+        return res.json({ error: "Invalid API Key" });
+    }
+
+    // Valid key! Store it in req.key for route access.
+    req.key = key;
+    next();
+});
+
 // Use our Routes
 app.use("/api/users", users);
 app.use("/api/posts", posts);
